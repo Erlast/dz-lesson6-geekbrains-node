@@ -10,7 +10,7 @@ var cookieParser = require('cookie-parser');
 var session = require('cookie-session');
 var passport = require('passport');
 var LocalStratagy = require('passport-local');
-var FacebookStrategy = require('passport-facebook');
+var VkStrategy = require('passport-vkontakte');
 
 var app = express();
 
@@ -42,17 +42,17 @@ passport.use(new LocalStratagy(function (username, pass, done) {
     }
 }));
 
-passport.use(new FacebookStrategy({
-        clientID: '522302881289502',
-        clientSecret: 'f3d36ee2a4289e8ef10b86d1c978cec5Reset',
-        callbackURL: "http://localhost:8000/login/facebook/callback"
-    },
-    function (accessToken, refreshToken, profile, cb) {
-        User.findOrCreate({facebookId: profile.id}, function (err, user) {
-            return cb(err, user);
-        });
-    }
-));
+// passport.use(new VkStrategy({
+//         clientID:     '5369971', // VK.com docs call it 'API ID'
+//         clientSecret: 'sUmzO2LkKMD5O8uHyts1',
+//         callbackURL:  "http://localhost:3000/auth/vkontakte/callback"
+//     },
+//     function(accessToken, refreshToken, profile, done) {
+//         User.findOrCreate({ vkontakteId: profile.id }, function (err, user) {
+//             return done(err, user);
+//         });
+//     }
+// ));
 
 passport.serializeUser(function (user, done) {
     return done(null, user.username);
@@ -67,11 +67,11 @@ var auth = passport.authenticate('local', {
     failureRedirect: '/login',
 });
 
-app.get('/login/facebook',
-    passport.authenticate('facebook'));
+app.get('/auth/vkontakte',
+    passport.authenticate('vkontakte'));
 
-app.get('/login/facebook/callback',
-    passport.authenticate('facebook', {failureRedirect: '/login'}),
+app.get('/auth/vkontakte/callback',
+    passport.authenticate('vkontakte', {failureRedirect: '/login'}),
     function (req, res) {
         // Successful authentication, redirect home.
         res.redirect('/workBD');
@@ -95,27 +95,27 @@ app.get('/workBD', mustBeAuthentificated, function (req, res) {
 
 app.get('/add', function (req, res) {
     todolist.add("Задание");
-    res.redirect("/");
+    res.redirect("/workBD");
 })
 
 app.get('/delete', mustBeAuthentificated, function (req, res) {
     todolist.delete(req.query.id);
-    res.redirect("/");
+    res.redirect("/workBD");
 })
 
 app.get('/complete', mustBeAuthentificated, function (req, res) {
     todolist.complete(req.query.id);
-    res.redirect("/");
+    res.redirect("/workBD");
 })
 
 app.get('/change', mustBeAuthentificated, function (req, res) {
     todolist.change(req.query.id, "Задание " + req.query.id);
-    res.redirect("/");
+    res.redirect("/workBD");
 })
 
 app.get('/logout', function (req, res) {
     req.logout();
-    res.redirect('/');
+    res.redirect('/workBD');
 });
 
 function mustBeAuthentificated(req, res, next) {
