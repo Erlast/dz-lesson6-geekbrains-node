@@ -1,0 +1,34 @@
+<html>
+<head>
+
+</head>
+<body>
+<h2>Работа с БД</h2>
+
+<a href="/add">Добавить запись</a>
+
+<table>
+    <thead>
+    <tr>
+        <th>#</th>
+        <th>Название</th>
+        <th>Статус</th>
+        <th>Удалить</th>
+    </tr>
+    </thead>
+    <tbody>
+    {{#each result}}
+    <tr>
+        <td>{{id}}</td>
+        <td><a href="/change?id={{id}}">{{task}}</a></td>
+        <td><a href="/complete?id={{id}}">{{complete}}</a></td>
+        <td><a href="/delete?id={{id}}">Удалить</a></td>
+    </tr>
+    {{/each}}
+    </tbody>
+
+</table>
+
+<a href="/logout">Выход</a>
+</body>
+</html>
