@@ -10,7 +10,7 @@ var cookieParser = require('cookie-parser');
 var session = require('cookie-session');
 var passport = require('passport');
 var LocalStratagy = require('passport-local');
-var VkStrategy = require('passport-vkontakte');
+var FacebookStrategy = require('passport-facebook');
 
 var app = express();
 
@@ -42,24 +42,24 @@ passport.use(new LocalStratagy(function (username, pass, done) {
     }
 }));
 
-// passport.use(new VkStrategy({
-//         clientID:     '5369971', // VK.com docs call it 'API ID'
-//         clientSecret: 'sUmzO2LkKMD5O8uHyts1',
-//         callbackURL:  "http://localhost:3000/auth/vkontakte/callback"
-//     },
-//     function(accessToken, refreshToken, profile, done) {
-//         User.findOrCreate({ vkontakteId: profile.id }, function (err, user) {
-//             return done(err, user);
-//         });
-//     }
-// ));
+passport.use(new FacebookStrategy({
+        clientID: '1680139982242077',
+        clientSecret: '19766b5f299976495ffa9b9410732824',
+        callbackURL: "http://localhost:8000/auth/facebook/callback"
+    },
+    function (accessToken, refreshToken, profile, cb) {
+       //User.findOrCreate({facebookId: profile.id}, function (err, user) {
+        return cb(null, profile);
+       // });
+    }
+));
 
 passport.serializeUser(function (user, done) {
-    return done(null, user.username);
+    return done(null, user);
 });
 
 passport.deserializeUser(function (id, done) {
-    return done(null, {username: id});
+    return done(null, id);
 });
 
 var auth = passport.authenticate('local', {
@@ -67,11 +67,11 @@ var auth = passport.authenticate('local', {
     failureRedirect: '/login',
 });
 
-app.get('/auth/vkontakte',
-    passport.authenticate('vkontakte'));
+app.get('/auth/facebook',
+    passport.authenticate('facebook'));
 
-app.get('/auth/vkontakte/callback',
-    passport.authenticate('vkontakte', {failureRedirect: '/login'}),
+app.get('/auth/facebook/callback',
+    passport.authenticate('facebook', {failureRedirect: '/login'}),
     function (req, res) {
         // Successful authentication, redirect home.
         res.redirect('/workBD');
